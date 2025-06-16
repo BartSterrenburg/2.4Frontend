@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@entity": ["shared/entity/src/index.ts"],
-      "@shared/dto": ["shared/dto/src/index.ts"],
+      "@dto": ["shared/dto/src/index.ts"],
       "@shared/entity": ["shared/src/index.ts"]
     }
   },

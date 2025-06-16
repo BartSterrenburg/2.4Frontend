@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '@entity';
-import { generateKeyPairSync } from 'crypto';
+import { User, VerifyLog } from '@entity';
+import { VerifyDataDto } from '@dto';
+import { createVerify, generateKeyPairSync } from 'crypto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(VerifyLog)
+    private verifyLogRepository: Repository<VerifyLog>,
   ) {}
 
   async login(username: string, password: string) {
@@ -42,6 +45,44 @@ export class AuthService {
       privateKey,
     };
   }
+
+
+async verifyData(dto: VerifyDataDto) {
+  const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+
+  const log = this.verifyLogRepository.create({
+    userId: dto.userId,
+    data: dto.data,
+    signature: dto.signature,
+    publicKeyUsed: user?.publicKey ?? null,
+    result: 'invalid',
+  });
+
+  if (!user || !user.publicKey) {
+    log.reason = 'Geen gebruiker of publieke sleutel gevonden';
+    await this.verifyLogRepository.save(log);
+    return { valid: false };
+  }
+
+  try {
+    const verifier = createVerify('SHA256');
+    verifier.update(dto.data);
+    verifier.end();
+
+    const isValid = verifier.verify(user.publicKey, Buffer.from(dto.signature, 'base64'));
+
+    log.result = isValid ? 'valid' : 'invalid';
+    if (!isValid) log.reason = 'Signature mismatch';
+
+    await this.verifyLogRepository.save(log);
+    return { valid: isValid };
+  } catch (err) {
+    log.reason = err.message;
+    await this.verifyLogRepository.save(log);
+    return { valid: false };
+  }
+}
+
 
   async getPublicKeyById(userId: number): Promise<string | null> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
