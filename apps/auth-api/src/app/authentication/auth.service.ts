@@ -42,4 +42,10 @@ export class AuthService {
       privateKey,
     };
   }
+
+  async getPublicKeyById(userId: number): Promise<string | null> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    return user?.publicKey || null;
+  }
+
 }
