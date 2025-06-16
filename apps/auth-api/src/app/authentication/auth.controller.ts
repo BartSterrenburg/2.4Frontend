@@ -1,7 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { LoginDto } from './../../../../../libs/shared/dto/login.dto';
+import { LoginDto } from '@shared/dto';
 
 @Controller()
 export class AuthController {

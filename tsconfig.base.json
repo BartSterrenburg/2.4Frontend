@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@Dto/auth": ["libs/shared/dto/login.dto.ts"]
+      "@entity": ["shared/entity/src/index.ts"],
+      "@shared/dto": ["shared/dto/src/index.ts"],
+      "@shared/entity": ["shared/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
