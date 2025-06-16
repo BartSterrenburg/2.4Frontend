@@ -6,9 +6,15 @@ import { LoginDto } from '@shared/dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+
+  // TO DO, assymetrische key relatie toevoegen.
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     const { username, password } = loginDto;
     return this.authService.login(username, password);
   }
+
+  // POST /auth/verify-data
+  // GET /auth/public-key/:id
+  // POST /auth/verify-data	
 }

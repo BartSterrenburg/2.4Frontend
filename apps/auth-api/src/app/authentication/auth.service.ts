@@ -11,6 +11,7 @@ export class AuthService {
     private userRepository: Repository<User>,
   ) {}
 
+
   async login(username: string, password: string) {
     const users = await this.userRepository.find();
     console.log('Gevonden gebruikers:', users); // ← CHECK CONNECTIE HIER

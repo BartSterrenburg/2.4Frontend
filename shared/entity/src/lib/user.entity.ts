@@ -9,8 +9,17 @@ export class User {
   username?: string;
 
   @Column()
+  password?: string;
+
+  @Column()
   email?: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   publicKey?: string;
+
+  @Column('datetime', { default: () => 'CURRENT_TIMESTAMP' })
+  createdAt?: Date;
+
+  @Column('datetime', { nullable: true })
+  lastLogin?: Date;
 }
