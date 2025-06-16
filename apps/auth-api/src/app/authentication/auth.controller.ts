@@ -7,7 +7,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
 
-  // TO DO, assymetrische key relatie toevoegen.
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     const { username, password } = loginDto;
