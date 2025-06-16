@@ -1,0 +1,10 @@
+{
+  "name": "the-circle-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/the-circle-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["the-circle"],
+  "// targets": "to see all targets run: nx show project the-circle-e2e --web",
+  "targets": {}
+}
