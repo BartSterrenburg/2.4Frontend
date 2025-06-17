@@ -1,1 +1,17 @@
-<p>startscreen works!</p>
+<div class="main-container">
+  <div class="grid-container">
+    <video #videoPlayer1 controls muted></video>
+    <video #videoPlayer2 controls muted></video>
+    <video #videoPlayer3 controls muted></video>
+    <video #videoPlayer4 controls muted></video>
+  </div>
+  <div class="chat-container">
+    <!-- Hier kun je een iframe naar een echte chat zetten of een placeholder -->
+    <iframe 
+      src="https://www.twitch.tv/embed/xqc/chat?parent=localhost" 
+      frameborder="0" 
+      allowfullscreen
+      scrolling="yes">
+    </iframe>
+  </div>
+</div>
