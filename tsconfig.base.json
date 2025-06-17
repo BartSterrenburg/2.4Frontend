@@ -14,7 +14,12 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@dto": ["shared/dto/src/index.ts"],
+      "@entity": ["shared/entity/src/index.ts"],
+      "@services": ["shared/services/src/index.ts"],
+      "@shared/entity": ["shared/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

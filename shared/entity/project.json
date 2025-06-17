@@ -1,0 +1,28 @@
+{
+  "name": "entity",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "shared/entity/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/shared/entity",
+        "main": "shared/entity/src/index.ts",
+        "tsConfig": "shared/entity/tsconfig.lib.json",
+        "assets": ["shared/entity/*.md"],
+        "format": ["cjs"],
+        "generatePackageJson": true
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "shared/entity/jest.config.ts"
+      }
+    }
+  }
+}
