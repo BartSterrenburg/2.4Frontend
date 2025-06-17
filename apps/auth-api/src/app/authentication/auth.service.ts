@@ -14,10 +14,26 @@ export class AuthService {
     private verifyLogRepository: Repository<VerifyLog>,
   ) {}
 
+  async register(username: string, email: string, password: string) {
+    const user = new User();
+    user.username = username;
+    user.email = email;
+    user.setPassword(password);
+    const saved = await this.userRepository.save(user);
+
+    return {
+      id: saved.id,
+      username: saved.username,
+      email: saved.email,
+      createdAt: saved.createdAt,
+    };
+  }
+
+
   async login(username: string, password: string) {
     const user = await this.userRepository.findOne({ where: { username } });
 
-    if (!user || user.password !== password) {
+    if (await user.validatePassword(password) != true) {
       throw new Error('Ongeldige gebruikersnaam of wachtwoord');
     }
 

@@ -1,11 +1,18 @@
 import { Controller, Post, Body, Get, Param, NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiResponse, LoginDto, VerifyDataDto } from '@dto';
+import { ApiResponse, LoginDto, RegisterDto, VerifyDataDto } from '@dto';
 import { createSign } from 'crypto';
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    const { username, email, password } = registerDto;
+    const result = this.authService.register(username, email, password)
+    return new ApiResponse(200, 'registratie succesvol', result);
+  }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
