@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { ApiResponse, LoginDto, RegisterDto, VerifyDataDto } from '@dto';
 import { createSign } from 'crypto';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -29,7 +29,7 @@ export class AuthController {
   }
 
   
-  @Post('auth/verify-data')
+  @Post('verify-data')
   async verifyData(@Body() dto: VerifyDataDto) {
     console.log('DTO ontvangen:', dto);
     const result = await this.authService.verifyData(dto);

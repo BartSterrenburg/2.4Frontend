@@ -37,7 +37,6 @@ export class AuthService {
       throw new Error('Ongeldige gebruikersnaam of wachtwoord');
     }
 
-    // Genereer nieuw RSA sleutel-paar
     const { publicKey, privateKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
       publicKeyEncoding: {
@@ -50,7 +49,6 @@ export class AuthService {
       },
     });
 
-    // Sla publieke sleutel op bij gebruiker
     user.publicKey = publicKey;
     user.lastLogin = new Date();
     await this.userRepository.save(user);
