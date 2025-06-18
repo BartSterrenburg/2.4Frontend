@@ -1,38 +1,162 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
 .main-container {
   display: flex;
   height: 100vh;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+  position: relative;
 }
 
 .grid-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
   gap: 10px;
   flex: 3;
 }
 
-.chat-container {
-  flex: 1;
-  background-color: #111;
-  border-left: 1px solid #333;
-  width: 90%;
+.grid-1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.grid-2 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-4 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-2 .video-wrapper {
+  height: calc(50vh - 5px);
+}
+
+
+.video-wrapper {
+  position: relative;
+  transition: box-shadow 0.2s ease-in-out;
 }
 
 video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.top-bar, .search-bar {
+  padding: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.top-bar input, .search-bar input {
+  background: black;
+  border: none;
+  padding: 2px 4px;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  flex: 1;
+}
+
+.top-bar input::placeholder,
+.search-bar input::placeholder {
+  color: #ccc;
+}
+
+.top-bar .close-btn {
+  background: transparent;
+  border: none;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.center-button {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 64px;
+  color: white;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.video-wrapper:hover .center-button {
+  display: block;
+}
+
+.video-wrapper:hover {
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.4) inset;
+}
+
+
+.fullscreen-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: black;
+  border: none;
+  color: white;
+  font-size: 20px;
+  padding: 4px 6px;
+  cursor: pointer;
+  display: none;
+  z-index: 2;
+}
+
+.video-wrapper:hover .fullscreen-btn {
+  display: block;
+}
+
+.chat-container {
+  flex: 1;
+  background-color: #111;
+  border-left: 1px solid #333;
+  position: relative;
 }
 
 .chat-container iframe {
   width: 100%;
   height: 100%;
-  border: none;
+}
+
+.chat-header {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 10;
+  color: black;
+  font-size: 14px;
+}
+
+.chat-header select {
+  background: black;
+  color: white;
+  border: 1px solid #333;
+  font-family: 'Orbitron', sans-serif;
 }

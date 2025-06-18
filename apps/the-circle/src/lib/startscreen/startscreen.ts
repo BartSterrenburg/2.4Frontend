@@ -1,50 +1,134 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, QueryList, ViewChildren, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import Hls from 'hls.js';
 
 @Component({
+  standalone: true,
   selector: 'app-startscreen',
   templateUrl: './startscreen.html',
-  styleUrls: ['./startscreen.css']
+  styleUrls: ['./startscreen.css'],
+  imports: [CommonModule, FormsModule]
 })
 export class StartscreenComponent implements AfterViewInit {
-  @ViewChild('videoPlayer1') videoPlayer1!: ElementRef<HTMLVideoElement>;
-  @ViewChild('videoPlayer2') videoPlayer2!: ElementRef<HTMLVideoElement>;
-  @ViewChild('videoPlayer3') videoPlayer3!: ElementRef<HTMLVideoElement>;
-  @ViewChild('videoPlayer4') videoPlayer4!: ElementRef<HTMLVideoElement>;
+  @ViewChildren('videoPlayer') videoPlayers!: QueryList<ElementRef<HTMLVideoElement>>;
+
+  baseUrl = 'http://145.49.26.12/hls/';
+  streamCount = 4;
+
+  streams = [
+    { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
+    { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
+    { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
+    { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' }
+  ];
 
   ngAfterViewInit(): void {
-    const streams = [
-      { videoEl: this.videoPlayer1.nativeElement, url: 'http://145.49.9.94:8080/hls/RenzeStreamKey.m3u8' },
-      { videoEl: this.videoPlayer2.nativeElement, url: 'http://145.49.9.94/hls/Stream2.m3u8' },
-      { videoEl: this.videoPlayer3.nativeElement, url: 'http://145.49.9.94/hls/Stream3.m3u8' },
-      { videoEl: this.videoPlayer4.nativeElement, url: 'http://145.49.9.94/hls/Stream4.m3u8' },
-    ];
-
-    streams.forEach(({ videoEl, url }, index) => {
-      if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(videoEl);
-
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoEl.play().catch(err => {
-            console.error(`Fout bij video ${index + 1} afspelen:`, err);
-          });
-        });
-
-        hls.on(Hls.Events.ERROR, (event, data) => {
-          console.error(`HLS.js error bij video ${index + 1}:`, data);
-        });
-      } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-        videoEl.src = url;
-        videoEl.addEventListener('loadedmetadata', () => {
-          videoEl.play().catch(err => {
-            console.error(`Fout bij native video ${index + 1} afspelen:`, err);
-          });
-        });
-      } else {
-        console.error(`HLS niet ondersteund voor video ${index + 1}`);
-      }
+    this.videoPlayers.forEach((videoRef, index) => {
+      this.startStream(videoRef.nativeElement, this.streams[index], index);
     });
+  }
+
+  startStream(videoEl: HTMLVideoElement, stream: any, index: number) {
+    if (stream.url === this.baseUrl) {
+      return;
+    }
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(stream.url);
+      hls.attachMedia(videoEl);
+      stream.hls = hls;
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        videoEl.play().catch(err => console.error(`Fout bij video ${index + 1}:`, err));
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error(`HLS.js error bij video ${index + 1}:`, data);
+      });
+    } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+      videoEl.src = stream.url;
+      videoEl.addEventListener('loadedmetadata', () => {
+        videoEl.play().catch(err => console.error(`Fout bij native video ${index + 1}:`, err));
+      });
+    } else {
+      console.error(`HLS niet ondersteund voor video ${index + 1}`);
+    }
+  }
+
+  togglePlay(index: number) {
+    const videoEl = this.videoPlayers.get(index)!.nativeElement;
+    if (videoEl.paused) {
+      videoEl.play();
+    } else {
+      videoEl.pause();
+    }
+  }
+
+  closeStream(index: number, resetUrl = true) {
+    const videoEl = this.videoPlayers.get(index)!.nativeElement;
+    const stream = this.streams[index];
+
+    if (stream.hls) {
+      stream.hls.destroy();
+      stream.hls = null;
+    }
+
+    videoEl.src = '';
+    if (resetUrl) {
+      stream.url = this.baseUrl;
+      stream.name = '';
+    }
+  }
+
+  loadNewStream(index: number) {
+    const stream = this.streams[index];
+
+    if (!stream.newName || !stream.newName.trim()) {
+      console.warn('Geen geldige streamer naam ingevoerd');
+      return;
+    }
+
+    const trimmedName = stream.newName.trim();
+    const newUrl = `${this.baseUrl}${trimmedName}.m3u8`;
+
+    this.closeStream(index, false);
+    stream.name = trimmedName;
+    stream.url = newUrl;
+
+    const videoEl = this.videoPlayers.get(index)!.nativeElement;
+    this.startStream(videoEl, stream, index);
+  }
+
+  goFullscreen(index: number) {
+    const videoEl = this.videoPlayers.get(index)!.nativeElement;
+    if (videoEl.requestFullscreen) {
+      videoEl.requestFullscreen();
+    } else if ((videoEl as any).webkitRequestFullscreen) {
+      (videoEl as any).webkitRequestFullscreen();
+    } else if ((videoEl as any).mozRequestFullScreen) {
+      (videoEl as any).mozRequestFullScreen();
+    } else if ((videoEl as any).msRequestFullscreen) {
+      (videoEl as any).msRequestFullscreen();
+    }
+  }
+
+  isDefaultStream(stream: any): boolean {
+    return stream.url === this.baseUrl;
+  }
+
+  updateStreamCount() {
+    const currentLength = this.streams.length;
+    if (this.streamCount > currentLength) {
+      for (let i = currentLength; i < this.streamCount; i++) {
+        this.streams.push({ name: '', url: this.baseUrl, hls: null, newName: '' });
+      }
+    } else if (this.streamCount < currentLength) {
+      for (let i = this.streamCount; i < currentLength; i++) {
+        this.closeStream(i);
+      }
+      this.streams.splice(this.streamCount);
+    }
   }
 }
