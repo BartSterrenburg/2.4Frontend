@@ -1,6 +1,8 @@
 import { Route } from '@angular/router';
-import { Startscreen } from '../lib/startscreen/startscreen';
+import { StartscreenComponent } from '../lib/startscreen/startscreen';
+import { Login } from '../lib/login/login';
 
 export const appRoutes: Route[] = [
-    {path: '', component: Startscreen},
+    {path: '', component: StartscreenComponent},
+    {path: 'login', component : Login},
 ];
