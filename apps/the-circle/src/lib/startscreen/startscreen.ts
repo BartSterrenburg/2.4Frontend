@@ -35,7 +35,7 @@ export class StartscreenComponent implements AfterViewInit {
     if (stream.url === this.baseUrl) {
       return;
     }
-
+    
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(stream.url);
