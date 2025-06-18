@@ -9,6 +9,12 @@ import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+    
+  
+  app.enableCors({
+    origin: 'http://localhost:4200',  // Toestaan van Angular origin
+    credentials: true,                // Als je cookies of auth headers meestuurt
+  });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;

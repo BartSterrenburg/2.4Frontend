@@ -1,1 +1,20 @@
-<p>login works!</p>
+<div class="login-container">
+  <h1>The circle</h1>
+  <form (ngSubmit)="login()" class="login-form">
+    <input
+      type="text"
+      placeholder="Username"
+      [(ngModel)]="username"
+      name="username"
+      required
+    />
+    <input
+      type="password"
+      placeholder="Password"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
+    <button type="submit">Log in</button>
+  </form>
+</div>
