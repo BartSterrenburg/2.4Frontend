@@ -1,10 +1,19 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrls: ['./login.css'],
 })
-export class Login {}
+export class LoginComponent {
+  username = '';
+  password = '';
+
+  login() {
+    alert(`Inloggen als: ${this.username}`);
+  }
+}
