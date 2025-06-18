@@ -38,10 +38,13 @@
   height: calc(50vh - 5px);
 }
 
-
 .video-wrapper {
   position: relative;
   transition: box-shadow 0.2s ease-in-out;
+}
+
+.video-wrapper.playing:hover {
+  box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.4) inset;
 }
 
 video {
@@ -110,16 +113,11 @@ video {
   display: block;
 }
 
-.video-wrapper:hover {
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.4) inset;
-}
-
-
 .fullscreen-btn {
   position: absolute;
   bottom: 5px;
   right: 5px;
-  background: black;
+  background: rgba(0, 0, 0, 0.6);
   border: none;
   color: white;
   font-size: 20px;
@@ -129,9 +127,10 @@ video {
   z-index: 2;
 }
 
-.video-wrapper:hover .fullscreen-btn {
+.video-wrapper.playing:hover .fullscreen-btn {
   display: block;
 }
+
 
 .chat-container {
   flex: 1;
@@ -150,7 +149,7 @@ video {
   top: 5px;
   left: 5px;
   z-index: 10;
-  color: black;
+  color: white;
   font-size: 14px;
 }
 

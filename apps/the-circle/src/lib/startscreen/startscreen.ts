@@ -23,6 +23,8 @@ export class StartscreenComponent implements AfterViewInit {
     { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' }
   ];
 
+  playingStates: boolean[] = [false, false, false, false];
+
   ngAfterViewInit(): void {
     this.videoPlayers.forEach((videoRef, index) => {
       this.startStream(videoRef.nativeElement, this.streams[index], index);
@@ -41,7 +43,9 @@ export class StartscreenComponent implements AfterViewInit {
       stream.hls = hls;
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        videoEl.play().catch(err => console.error(`Fout bij video ${index + 1}:`, err));
+        videoEl.play().then(() => {
+          this.playingStates[index] = true;
+        }).catch(err => console.error(`Fout bij video ${index + 1}:`, err));
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -50,7 +54,9 @@ export class StartscreenComponent implements AfterViewInit {
     } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
       videoEl.src = stream.url;
       videoEl.addEventListener('loadedmetadata', () => {
-        videoEl.play().catch(err => console.error(`Fout bij native video ${index + 1}:`, err));
+        videoEl.play().then(() => {
+          this.playingStates[index] = true;
+        }).catch(err => console.error(`Fout bij native video ${index + 1}:`, err));
       });
     } else {
       console.error(`HLS niet ondersteund voor video ${index + 1}`);
@@ -60,9 +66,10 @@ export class StartscreenComponent implements AfterViewInit {
   togglePlay(index: number) {
     const videoEl = this.videoPlayers.get(index)!.nativeElement;
     if (videoEl.paused) {
-      videoEl.play();
+      videoEl.play().then(() => this.playingStates[index] = true);
     } else {
       videoEl.pause();
+      this.playingStates[index] = false;
     }
   }
 
@@ -76,6 +83,8 @@ export class StartscreenComponent implements AfterViewInit {
     }
 
     videoEl.src = '';
+    this.playingStates[index] = false;
+
     if (resetUrl) {
       stream.url = this.baseUrl;
       stream.name = '';
@@ -123,12 +132,14 @@ export class StartscreenComponent implements AfterViewInit {
     if (this.streamCount > currentLength) {
       for (let i = currentLength; i < this.streamCount; i++) {
         this.streams.push({ name: '', url: this.baseUrl, hls: null, newName: '' });
+        this.playingStates.push(false);
       }
     } else if (this.streamCount < currentLength) {
       for (let i = this.streamCount; i < currentLength; i++) {
         this.closeStream(i);
       }
       this.streams.splice(this.streamCount);
+      this.playingStates.splice(this.streamCount);
     }
   }
 }

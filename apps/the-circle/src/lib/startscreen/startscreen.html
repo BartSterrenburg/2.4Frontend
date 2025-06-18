@@ -1,6 +1,8 @@
 <div class="main-container">
   <div class="grid-container grid-{{streamCount}}">
-    <div class="video-wrapper" *ngFor="let stream of streams; let i = index">
+    <div class="video-wrapper" 
+         *ngFor="let stream of streams; let i = index"
+         [ngClass]="{'playing': playingStates[i]}">
       <video #videoPlayer muted playsinline></video>
 
       <button class="fullscreen-btn" (click)="goFullscreen(i)">⛶</button>
