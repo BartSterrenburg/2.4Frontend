@@ -150,12 +150,15 @@ video {
   left: 5px;
   z-index: 10;
   color: white;
+  background: black;
+  border-radius: 2px;
   font-size: 14px;
 }
 
 .chat-header select {
   background: black;
   color: white;
-  border: 1px solid #333;
+  border: black;
+  border-left: 1px solid white;
   font-family: 'Orbitron', sans-serif;
 }
