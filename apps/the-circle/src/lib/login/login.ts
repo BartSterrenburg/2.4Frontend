@@ -43,6 +43,8 @@ async login() {
 
     // ✅ Zet de cookie correct (zonder 'secure' tijdens dev)
     document.cookie = `privateKey=${encodeURIComponent(result.data.privateKey)}; path=/; max-age=86400; SameSite=Lax`;
+    document.cookie = `user=${encodeURIComponent(this.username)}; path=/; max-age=86400; SameSite=Lax`;
+
 
     // ✅ Kleine vertraging zodat cookie wordt opgeslagen voor uitlezen (alleen voor debug)
     setTimeout(() => {
