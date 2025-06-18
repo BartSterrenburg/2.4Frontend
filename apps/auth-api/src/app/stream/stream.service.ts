@@ -5,7 +5,7 @@ import { parseStringPromise } from 'xml2js';
 
 @Injectable()
 export class StreamService {
-  private readonly nginxStatUrl = 'http://145.49.26.12:8080/STAT';
+  private readonly nginxStatUrl = 'http://145.49.27.145:8080/STAT';
   
   async getActiveStreamKeys(): Promise<string[]> {
     const res = await axios.get(this.nginxStatUrl);
