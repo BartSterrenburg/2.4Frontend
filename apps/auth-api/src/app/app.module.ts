@@ -3,13 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './authentication/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StreamModule } from './stream/stream.module';
 
 
 @Module({
   imports: [
       TypeOrmModule.forRoot({
       type: 'mssql',
-      host: 'localhost',
+      host: '145.49.25.193',
       port: 1433,
       username: 'sa',
       password: 'Bart2005!',
@@ -21,7 +22,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         trustServerCertificate: true
       }
     }),
-    AuthModule
+    AuthModule,
+    StreamModule
   ],
   controllers: [AppController],
   providers: [AppService],
