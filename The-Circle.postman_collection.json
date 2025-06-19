@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "bb84a97a-a3ad-412d-9915-fb17a2936602",
+		"name": "The-Circle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33739176"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"student\",\r\n  \"email\": \"b@g.g\",\r\n  \"password\": \"secret\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"student\",\r\n    \"password\": \"secret\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create signature",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": \"data-to-be-encrypted\",\r\n    \"priv-key\": \"-----BEGIN PRIVATE KEY-----\\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQDTnPFQXQjmVO7x\\nXioLlJltNM5hYIy3RgGejWoOmdE8ihVSOD5LwaQWXkhuf6tbbQpplENeSWeN7zZB\\neSiFr+Br3xEN/lUpO0oE0U9yX/g+h4p79airnYc80/UxLgM8nIZiha7vI4Ia/TEo\\ng7VwauOqpOGxZPYUgDg7GOnMNrl2+aioVmn/YZTYnmw25NOen+RiFyE7muA2+oDF\\njY6jb+qWPvxcMkaVLX7S2UqgpxLLuGS7f350P0SmSUm+rhw/iMSgBl5HV8E0wOLz\\nzhISa6uMPDvip6xRP++kTPnQjEUINkeP2ocOog6KkqihGzkMIW29cb6FfrLQbKCd\\nuiGhE4gxAgMBAAECgf9VjZ4CX5q5hJ0V+HwHMozVGgRWWjKJ5kPBVmsKfCWb1DfK\\nhfKpriAo6vVdt0AQNoV/KfISrJqxR4Un81PuuKyC8Cx0+95yTQYf7H+yPhqfLS1P\\n8IHA4G9MqGT4/SFR3/Z03pdbF4ACaVr2hklUqeJhm0ej8K2MnEofmnLrnTReZNUR\\nAmA+fT2kb4Z8EdRezRT0ExcxkXrHfKSa5HIL96RA7bQpBfQmAgKnbVS/cuMK97XL\\ni9GojACBl4MGjT/hAOuYeGGXBLxtyQzIY+/8ftL/HSk5JxM/1fgs5vMkIRfHhGBg\\nrS9pf0ZqEu08kajvrn+RhMeE3cWnaggIRaHPRycCgYEA7LGRLnr2wd9qLMRdjWuM\\nOSOOLY3GIODEjh7PnlpOdJGqBv485eTT78H4RszCo/jbuRittu8xjfmJSX2Gjvnl\\nNRSAMzBzm3gZ+TtM6VZgxO8sI2qo4Te2BGaKdbScSIs5qS0LqR8gL6SDqLkJvxwI\\nquZ37sP0yk1qdSnhqz1gl8sCgYEA5N+qKtAwvGMgC7PW4iyR7qJSbXNP/Yy1hZfQ\\nXURmQErmr+Qy7nyAvakmTtWsco33QKDy43VO3OGyWj6GGTE5syoYKHeaX/4lHEHt\\ncgF29rXzQut4fW3bADzXOwkw9A6lqcbZ14horGmGHg5qxpnrKhr0ASGkZV6u2fYv\\n3NWzCHMCgYBQ/1baXBPzNlwkI7KMAaDDsOonppuFhsVciSitXOP6OhrAN+JpHYx1\\nQKCQweNdr3ypc8uGjYYcuqcDciRI6zVHm9NfMRZuvoPM6UEhnICTA/HL0OUn5SOx\\nj9GUBBFzNcmung6eeltOUnMHmwK91n8U1Ld4CrDLRgDHRWTHb8KNTwKBgQDMh2wE\\nUoQa9eI/UvkmqXnH7VsH4FKNXN8igWZ80pElx0mbyawSH0TVOIG5VY2D2YYpRSuJ\\nRN2y2iaOKu2fObQ8fdOU5j0Yp372X5wXk2OCWVsIZHEKdc+NyND2OuJ6V1SIAeHO\\nkGIqISrvVSbqT8YtnGSNVkkZJaHPugdPq9EQLQKBgBji1Ws3G4pPF+97YJ3nS6XP\\ngmbB4aPNrStLWOOB99Y3UL+a0/4mSJPKRvq61nAvGV+ZD6dZlOqZ0wsnf7xxrROi\\n9slSDLjgFAmRkWhcW4B2c03QRkA7KMWLJBbjzpWTb276AOsJPCVnDj9t+u5xQadS\\n261QZOVxogFTDoj1rPVE\\n-----END PRIVATE KEY-----\\n\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/signature",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"signature"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "public key user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/user/1006/key",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"user",
+						"1006",
+						"key"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verify-data",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": 1006,\r\n    \"data\": \"data-to-be-encrypted\",\r\n    \"signature\": \"w5A9VKwhCf21G5IV57Ll1kkCS+CFy5NfCd4XtM8nqMm08fBzL9YWhfti3oGm0EIUre8s0DBsD2NItGdeoEyaMb3Wi9taxNWz9tm3OYnN1Dlmm2DwaoTcrOdtYnI77qiYtiBeCdmXTCTEojKNeCs5wOfGYxH/pNiXf8p6tGg+HaFccNlOLnKfSp+5Vr5RIn5gwaYPKsNLqEPGVD+78uXxKOephi9ejBWWANtnzCohAHpNAzn3uTKiq/bT0ebY6M18tqAy9D/n5H+vCXJD27FDm6Rd4uWZ96zHQKivcVaSQBfoOZSarguoOTTq//hfKxftc40vv1gWVGw3kbx0h3ztlQ==\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/verify-data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"verify-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetActiveStreamKey",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"bart\",\r\n    \"password\": \"secret\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/stream",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"stream"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

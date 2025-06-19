@@ -10,7 +10,7 @@ import { StreamModule } from './stream/stream.module';
   imports: [
       TypeOrmModule.forRoot({
       type: 'mssql',
-      host: '145.49.25.193',
+      host: 'localhost',
       port: 1433,
       username: 'sa',
       password: 'Bart2005!',
