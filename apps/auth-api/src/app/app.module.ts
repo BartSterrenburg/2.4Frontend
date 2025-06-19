@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './authentication/auth.module'
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StreamModule } from './stream/stream.module';
+import { ChatModule } from './chat/chat.module';
 
 
 @Module({
@@ -23,7 +24,8 @@ import { StreamModule } from './stream/stream.module';
       }
     }),
     AuthModule,
-    StreamModule
+    StreamModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -12,8 +12,8 @@ async function bootstrap() {
     
   
   app.enableCors({
-    origin: 'http://localhost:4200',  // Toestaan van Angular origin
-    credentials: true,                // Als je cookies of auth headers meestuurt
+    origin: 'http://localhost:4200',
+    credentials: true,
   });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
