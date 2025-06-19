@@ -1,0 +1,34 @@
+.chatbox-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #ccc;
+}
+
+.chat-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.chat-message {
+  margin-bottom: 0.75rem;
+  background: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.chat-form {
+  display: flex;
+  padding: 0.5rem;
+  border-top: 1px solid #ccc;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.chat-form button {
+  padding: 0.5rem 1rem;
+}

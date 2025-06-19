@@ -1,0 +1,13 @@
+<div class="chatbox-container">
+  <div class="chat-list">
+    <div class="chat-message" *ngFor="let chat of chats">
+      <strong>User {{ chat.userId }}:</strong> {{ chat.chat }}
+      <div class="timestamp">{{ chat.createdAt | date:'short' }}</div>
+    </div>
+  </div>
+
+  <form [formGroup]="chatForm" (ngSubmit)="sendChat()" class="chat-form">
+    <input type="text" formControlName="chat" placeholder="Typ je bericht..." />
+    <button type="submit">Verstuur</button>
+  </form>
+</div>
