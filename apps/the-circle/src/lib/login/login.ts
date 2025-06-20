@@ -41,19 +41,16 @@ async login() {
       return;
     }
 
-    // ✅ Zet de cookie correct (zonder 'secure' tijdens dev)
     document.cookie = `privateKey=${encodeURIComponent(result.data.privateKey)}; path=/; max-age=86400; SameSite=Lax`;
     document.cookie = `user=${encodeURIComponent(this.username)}; path=/; max-age=86400; SameSite=Lax`;
 
 
-    // ✅ Kleine vertraging zodat cookie wordt opgeslagen voor uitlezen (alleen voor debug)
     setTimeout(() => {
       const cookies = document.cookie.split(';');
       const privateKeyCookie = cookies.find(c => c.trim().startsWith('privateKey='));
       const privateKey = privateKeyCookie ? decodeURIComponent(privateKeyCookie.split('=')[1]) : null;
       console.log('Gelezen privateKey uit cookie:', privateKey);
 
-      // ✅ Redirect NA het lezen (alleen voor debug)
       this.router.navigateByUrl('/');
     }, 100);
 
