@@ -33,29 +33,52 @@ export class ChatboxComponent implements OnInit {
 
 async sendChat(): Promise<void> {
   const message = this.chatForm.value.chat.trim();
-  if (!message) return;
+  console.log('[🟡] Chat input:', message);
 
-  const privateKey = this.services.getCookie('privateKey');
-  if (!privateKey) {
-    console.error('Private key ontbreekt!');
+  if (!message) {
+    console.warn('[⚠️] Chat is leeg, versturen wordt afgebroken.');
     return;
   }
 
-  const timestamp = new Date().toISOString(); 
-  const signedHash = await this.services.createSignature(`${message};${timestamp}`, privateKey);
+  const privateKey = this.services.getCookie('privateKey');
+  console.log('[🔐] Ophalen van privateKey uit cookie...');
+
+  if (!privateKey) {
+    console.error('[❌] Private key ontbreekt! Chat wordt niet verstuurd.');
+    return;
+  }
+
+  console.log('[✅] Private key gevonden (eerste 100 tekens):', privateKey.slice(0, 100), '...');
+
+  const timestamp = new Date().toISOString();
+  const dataToSign = `${message};${timestamp}`;
+  console.log('[🖊️] Data om te signeren:', dataToSign);
+
+  const signedHash = await this.services.createSignature(dataToSign, privateKey);
+  console.log('[✍️] Signature (base64):', signedHash);
 
   const chatObj = {
     chat: message,
-    userId: 1004,
+    userId: 1006,
     timeStamp: timestamp,
-    signature: signedHash
+    signature: signedHash,
   };
 
-  this.http.post('http://localhost:3000/api/chat', chatObj).subscribe(() => {
-    this.chats.push({ ...chatObj, createdAt: new Date().toISOString() });
-    this.chatForm.reset();
+  console.log('[📦] Payload dat verstuurd wordt naar backend:', chatObj);
+
+  this.http.post('http://localhost:3000/api/chat', chatObj).subscribe({
+    next: (response) => {
+      console.log('[✅] Chat succesvol verstuurd. Response:', response);
+      this.chats.push({ ...chatObj, createdAt: new Date().toISOString() });
+      this.chatForm.reset();
+    },
+    error: (err) => {
+      console.error('[🔥] Fout bij versturen van chat:', err);
+    },
   });
 }
+
+
 
 
 }
