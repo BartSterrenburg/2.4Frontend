@@ -13,7 +13,7 @@ import Hls from 'hls.js';
 export class StartscreenComponent implements AfterViewInit {
   @ViewChildren('videoPlayer') videoPlayers!: QueryList<ElementRef<HTMLVideoElement>>;
 
-  baseUrl = 'http://145.49.26.12/hls/';
+  baseUrl = 'http://145.49.58.7:8080/hls/';
   streamCount = 4;
 
   streams = [
@@ -32,6 +32,8 @@ export class StartscreenComponent implements AfterViewInit {
   }
 
   startStream(videoEl: HTMLVideoElement, stream: any, index: number) {
+    console.log('deze stream wordt nu aangeroepen: ' + stream.url + 'en dit is de baseUrl: ' +  this.baseUrl);
+    
     if (stream.url === this.baseUrl) {
       return;
     }
