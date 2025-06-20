@@ -53,9 +53,9 @@ export class AuthService {
     user.lastLogin = new Date();
     await this.userRepository.save(user);
 
-    // Return private key aan de client
     return {
       message: 'Login succesvol',
+      userId: user.id,
       privateKey,
     };
   }

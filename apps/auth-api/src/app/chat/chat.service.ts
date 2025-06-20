@@ -30,18 +30,14 @@ async createChat(createChatDto: CreateChatDto): Promise<Chat> {
 
   if (!result.valid) {
     console.warn('[❌] Signature verification mislukt voor userId:', verifyInput.userId);
-    // Optioneel: return null of throw new UnauthorizedException()
   } else {
+    const chat = this.chatRepository.create(createChatDto);
+    console.log('[💾] Chat entity gecreëerd (nog niet opgeslagen):', chat);
     console.log('[✅] Signature geldig. Bericht wordt opgeslagen.');
+    const savedChat = await this.chatRepository.save(chat);
+    console.log('[📚] Chat succesvol opgeslagen in database:', savedChat);
+    return savedChat;
   }
-
-  const chat = this.chatRepository.create(createChatDto);
-  console.log('[💾] Chat entity gecreëerd (nog niet opgeslagen):', chat);
-
-  const savedChat = await this.chatRepository.save(chat);
-  console.log('[📚] Chat succesvol opgeslagen in database:', savedChat);
-
-  return savedChat;
 }
 
 }
