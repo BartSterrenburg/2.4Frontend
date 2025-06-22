@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Services } from '@services';
+import { VerifiedChat } from '@entity';
 
 @Component({
   standalone: true,
@@ -11,9 +12,10 @@ import { Services } from '@services';
   styleUrls: ['./chatbox.css'],
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
 })
-export class ChatboxComponent implements OnInit {
+export class ChatboxComponent implements OnInit, OnDestroy {
   chatForm: FormGroup;
-  chats: { chat: string; userId: number; createdAt?: string }[] = [];
+  chats: VerifiedChat[] = [];
+  private intervalId: any;
 
   constructor(
     private fb: FormBuilder,
@@ -27,12 +29,27 @@ export class ChatboxComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChats();
+    this.startAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   loadChats(): void {
-    this.http.get<any[]>('http://localhost:3000/api/chat').subscribe((data) => {
-      this.chats = data;
-    });
+    this.http
+      .get<VerifiedChat[]>('http://localhost:3000/api/chat/-')
+      .subscribe((data) => {
+        this.chats = data;
+      });
+  }
+
+  startAutoRefresh(): void {
+    this.intervalId = setInterval(() => {
+      this.loadChats();
+    }, 3000);
   }
 
   async sendChat(): Promise<void> {
@@ -53,26 +70,14 @@ export class ChatboxComponent implements OnInit {
     }
 
     const userId = this.services.getCookie('userId');
+    if (!userId) return;
 
-    if (!userId) {
-      return;
-    }
+    const now = new Date();
+    now.setMilliseconds(0);
+    const timestamp = now.toISOString();
 
-    console.log(
-      '[✅] Private key gevonden (eerste 100 tekens):',
-      privateKey.slice(0, 100),
-      '...'
-    );
-
-    const timestamp = new Date().toISOString();
     const dataToSign = `${message};${timestamp}`;
-    console.log('[🖊️] Data om te signeren:', dataToSign);
-
-    const signedHash = await this.services.createSignature(
-      dataToSign,
-      privateKey
-    );
-    console.log('[✍️] Signature (base64):', signedHash);
+    const signedHash = await this.services.createSignature(dataToSign, privateKey);
 
     const chatObj = {
       chat: message,
@@ -81,12 +86,10 @@ export class ChatboxComponent implements OnInit {
       signature: signedHash,
     };
 
-    console.log('[📦] Payload dat verstuurd wordt naar backend:', chatObj);
-
     this.http.post('http://localhost:3000/api/chat', chatObj).subscribe({
       next: (response) => {
         console.log('[✅] Chat succesvol verstuurd. Response:', response);
-        this.chats.push({ ...chatObj, createdAt: new Date().toISOString() });
+        this.loadChats();
         this.chatForm.reset();
       },
       error: (err) => {

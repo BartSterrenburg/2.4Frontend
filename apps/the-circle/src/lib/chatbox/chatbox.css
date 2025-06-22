@@ -32,3 +32,33 @@
 .chat-form button {
   padding: 0.5rem 1rem;
 }
+
+.chat-message {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.valid-chat {
+  background-color: #e0ffe0;
+  border-color: #a0e6a0;
+}
+
+.invalid-chat {
+  background-color: #ffe0e0;
+  border-color: #e6a0a0;
+  color: #900;
+}
+
+.timestamp {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.warning {
+  font-weight: bold;
+  color: #b30000;
+  margin-left: 0.5rem;
+}
+
