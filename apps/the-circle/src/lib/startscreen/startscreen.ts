@@ -1,7 +1,8 @@
-import { Component, AfterViewInit, QueryList, ViewChildren, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, QueryList, ViewChildren, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Hls from 'hls.js';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   standalone: true,
@@ -10,10 +11,10 @@ import Hls from 'hls.js';
   styleUrls: ['./startscreen.css'],
   imports: [CommonModule, FormsModule]
 })
-export class StartscreenComponent implements AfterViewInit {
+export class StartscreenComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('videoPlayer') videoPlayers!: QueryList<ElementRef<HTMLVideoElement>>;
 
-  baseUrl = 'http://145.49.26.12/hls/';
+  baseUrl = 'http://145.49.58.7:8080/hls/';
   streamCount = 4;
 
   streams = [
@@ -25,17 +26,36 @@ export class StartscreenComponent implements AfterViewInit {
 
   playingStates: boolean[] = [false, false, false, false];
 
-  ngAfterViewInit(): void {
-    this.videoPlayers.forEach((videoRef, index) => {
-      this.startStream(videoRef.nativeElement, this.streams[index], index);
-    });
+  availableStreams: string[] = [];
+
+  private http = inject(HttpClient);
+  private streamRefreshIntervalId: any;
+
+
+  constructor() {
+    this.startFetchingAvailableStreams();
   }
+
+  ngAfterViewInit() {
+  this.videoPlayers.forEach((videoRef, index) => {
+    this.startStream(videoRef.nativeElement, this.streams[index], index);
+  });
+
+  this.videoPlayers.changes.subscribe(() => {
+    this.videoPlayers.forEach((videoRef, index) => {
+      if (!this.playingStates[index]) {
+        this.startStream(videoRef.nativeElement, this.streams[index], index);
+      }
+    });
+  });
+}
+
 
   startStream(videoEl: HTMLVideoElement, stream: any, index: number) {
     if (stream.url === this.baseUrl) {
       return;
     }
-    
+
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(stream.url);
@@ -48,9 +68,9 @@ export class StartscreenComponent implements AfterViewInit {
         }).catch(err => console.error(`Fout bij video ${index + 1}:`, err));
       });
 
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error(`HLS.js error bij video ${index + 1}:`, data);
-      });
+
+
+
     } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
       videoEl.src = stream.url;
       videoEl.addEventListener('loadedmetadata', () => {
@@ -64,7 +84,7 @@ export class StartscreenComponent implements AfterViewInit {
   }
 
   togglePlay(index: number) {
-    const videoEl = this.videoPlayers.get(index)!.nativeElement;
+    const videoEl = this.videoPlayers.toArray()[index].nativeElement;
     if (videoEl.paused) {
       videoEl.play().then(() => this.playingStates[index] = true);
     } else {
@@ -142,4 +162,50 @@ export class StartscreenComponent implements AfterViewInit {
       this.playingStates.splice(this.streamCount);
     }
   }
+
+startFetchingAvailableStreams() {
+  // Direct ophalen bij starten
+  this.fetchAvailableStreams();
+
+  // Elke 10 seconden opnieuw ophalen
+  this.streamRefreshIntervalId = setInterval(() => {
+    this.fetchAvailableStreams();
+  }, 3000); // 10 seconden
+}
+
+
+
+
+  private fetchAvailableStreams() {
+  this.http.get('http://145.49.58.7:8080/stat', { responseType: 'text' })
+    .subscribe({
+      next: (data: string) => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, 'application/xml');
+
+        // Alle <stream> elementen ophalen
+        const streamElements = xmlDoc.getElementsByTagName('stream');
+
+        // Namen in array verzamelen
+        this.availableStreams = [];
+        for (let i = 0; i < streamElements.length; i++) {
+          const nameElem = streamElements[i].getElementsByTagName('name')[0];
+          if (nameElem && nameElem.textContent) {
+            this.availableStreams.push(nameElem.textContent);
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Fout bij ophalen beschikbare streams:', error);
+      }
+    });
+}
+
+ngOnDestroy(): void {
+  if (this.streamRefreshIntervalId) {
+    clearInterval(this.streamRefreshIntervalId);
+  }
+}
+
+
 }

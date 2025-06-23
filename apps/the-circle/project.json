@@ -48,8 +48,11 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "continuous": true,
-      "executor": "@angular/build:dev-server",
+        "continuous": true,
+        "executor": "@angular/build:dev-server",
+        "options": {
+        "proxyConfig": "apps/the-circle/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "the-circle:build:production"

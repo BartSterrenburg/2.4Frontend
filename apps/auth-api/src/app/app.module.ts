@@ -14,7 +14,7 @@ import { ChatModule } from './chat/chat.module';
       host: 'localhost',
       port: 1433,
       username: 'sa',
-      password: 'Bart2005!',
+      password: 'Secret123',
       database: 'TheCircleAuth',
       autoLoadEntities: true,
       synchronize: true,

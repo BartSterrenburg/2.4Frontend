@@ -17,18 +17,33 @@
             />
             <button class="close-btn" (click)="closeStream(i)">❌</button>
           </div>
-          <div class="center-button" (click)="togglePlay(i)">
+          <div 
+            class="center-button" 
+            tabindex="0"
+            role="button"
+            (click)="togglePlay(i)"
+            (keyup.enter)="togglePlay(i)">
             ▶
           </div>
+
         </ng-container>
 
         <ng-template #searchBar>
           <div class="search-bar">
+           <div class="dropdown-container">
+            <select [(ngModel)]="stream.newName">
+              <option value="" disabled selected>Kies stream...</option>
+              <option *ngFor="let s of availableStreams" [value]="s">{{ s }}</option>
+            </select>
+
             <input 
               [(ngModel)]="stream.newName"
               (keyup.enter)="loadNewStream(i)"
-              placeholder="Zoek streamer..."
+              placeholder="Of typ handmatig"
             />
+
+            <button (click)="loadNewStream(i)">▶️ Start</button>
+          </div>
           </div>
         </ng-template>
       </div>
