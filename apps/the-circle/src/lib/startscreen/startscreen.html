@@ -1,52 +1,51 @@
 <div class="main-container">
-  <div class="grid-container grid-{{streamCount}}">
-    <div class="video-wrapper" 
-         *ngFor="let stream of streams; let i = index"
-         [ngClass]="{'playing': playingStates[i]}">
-      <video #videoPlayer muted playsinline></video>
+  <div class="chat-stream-grid">
+    <div class="video-chat-pair-row" *ngFor="let i of getRowIndices()">
+      <div class="video-chat-pair" *ngFor="let j of [0, 1]">
+        <ng-container *ngIf="streams[i + j]">
+          <div class="video-wrapper" [ngClass]="{ 'playing': playingStates[i + j] }">
+            <video #videoPlayer muted playsinline></video>
+            <button class="fullscreen-btn" (click)="goFullscreen(i + j)">⛶</button>
 
-      <button class="fullscreen-btn" (click)="goFullscreen(i)">⛶</button>
+            <div class="overlay">
+              <ng-container *ngIf="!isDefaultStream(streams[i + j]); else searchBar">
+                <div class="top-bar">
+                  <input
+                    [(ngModel)]="streams[i + j].newName"
+                    (keyup.enter)="loadNewStream(i + j)"
+                    placeholder="Streamer naam"
+                  />
+                  <button class="close-btn" (click)="closeStream(i + j)">❌</button>
+                </div>
+                <div class="center-button" (click)="togglePlay(i + j)">▶</div>
+              </ng-container>
 
-      <div class="overlay">
-        <ng-container *ngIf="!isDefaultStream(stream); else searchBar">
-          <div class="top-bar">
-            <input 
-              [(ngModel)]="stream.newName"
-              (keyup.enter)="loadNewStream(i)"
-              placeholder="Streamer naam"
-            />
-            <button class="close-btn" (click)="closeStream(i)">❌</button>
+              <ng-template #searchBar>
+                <div class="search-bar">
+                  <input
+                    [(ngModel)]="streams[i + j].newName"
+                    (keyup.enter)="loadNewStream(i + j)"
+                    placeholder="Zoek streamer..."
+                  />
+                </div>
+              </ng-template>
+            </div>
           </div>
-          <div class="center-button" (click)="togglePlay(i)">
-            ▶
-          </div>
+
+          <app-chatbox [streamKey]="streams[i + j].name || '-'"></app-chatbox>
         </ng-container>
-
-        <ng-template #searchBar>
-          <div class="search-bar">
-            <input 
-              [(ngModel)]="stream.newName"
-              (keyup.enter)="loadNewStream(i)"
-              placeholder="Zoek streamer..."
-            />
-          </div>
-        </ng-template>
       </div>
     </div>
   </div>
 
-  <div class="chat-container">
-    <div class="chat-header">
-      <label for="streamCount">Aantal streams: </label>
-      <select id="streamCount" [(ngModel)]="streamCount" (change)="updateStreamCount()">
-        <option *ngFor="let n of [1,2,3,4]" [value]="n">{{n}}</option>
-      </select>
-    </div>
-    <iframe 
-      src="https://www.twitch.tv/embed/xqc/chat?parent=localhost" 
-      frameborder="0" 
-      allowfullscreen
-      scrolling="yes">
-    </iframe>
+  <div class="chat-header global-stream-settings">
+    <label for="streamCount">Aantal streams: </label>
+    <select
+      id="streamCount"
+      [(ngModel)]="streamCount"
+      (change)="updateStreamCount()"
+    >
+      <option *ngFor="let n of [1, 2, 3, 4]" [value]="n">{{ n }}</option>
+    </select>
   </div>
 </div>

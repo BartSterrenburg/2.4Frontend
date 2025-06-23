@@ -1,17 +1,26 @@
-import { Component, AfterViewInit, QueryList, ViewChildren, ElementRef } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  QueryList,
+  ViewChildren,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Hls from 'hls.js';
+import { ChatboxComponent } from '../chatbox/chatbox';
 
 @Component({
   standalone: true,
   selector: 'app-startscreen',
   templateUrl: './startscreen.html',
   styleUrls: ['./startscreen.css'],
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, ChatboxComponent],
 })
 export class StartscreenComponent implements AfterViewInit {
-  @ViewChildren('videoPlayer') videoPlayers!: QueryList<ElementRef<HTMLVideoElement>>;
+  @ViewChildren('videoPlayer') videoPlayers!: QueryList<
+    ElementRef<HTMLVideoElement>
+  >;
 
   baseUrl = 'http://145.49.26.12/hls/';
   streamCount = 4;
@@ -20,7 +29,7 @@ export class StartscreenComponent implements AfterViewInit {
     { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
     { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
     { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
-    { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' }
+    { name: '', url: this.baseUrl, hls: null as Hls | null, newName: '' },
   ];
 
   playingStates: boolean[] = [false, false, false, false];
@@ -35,7 +44,7 @@ export class StartscreenComponent implements AfterViewInit {
     if (stream.url === this.baseUrl) {
       return;
     }
-    
+
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(stream.url);
@@ -43,9 +52,12 @@ export class StartscreenComponent implements AfterViewInit {
       stream.hls = hls;
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        videoEl.play().then(() => {
-          this.playingStates[index] = true;
-        }).catch(err => console.error(`Fout bij video ${index + 1}:`, err));
+        videoEl
+          .play()
+          .then(() => {
+            this.playingStates[index] = true;
+          })
+          .catch((err) => console.error(`Fout bij video ${index + 1}:`, err));
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -54,9 +66,14 @@ export class StartscreenComponent implements AfterViewInit {
     } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
       videoEl.src = stream.url;
       videoEl.addEventListener('loadedmetadata', () => {
-        videoEl.play().then(() => {
-          this.playingStates[index] = true;
-        }).catch(err => console.error(`Fout bij native video ${index + 1}:`, err));
+        videoEl
+          .play()
+          .then(() => {
+            this.playingStates[index] = true;
+          })
+          .catch((err) =>
+            console.error(`Fout bij native video ${index + 1}:`, err)
+          );
       });
     } else {
       console.error(`HLS niet ondersteund voor video ${index + 1}`);
@@ -66,7 +83,7 @@ export class StartscreenComponent implements AfterViewInit {
   togglePlay(index: number) {
     const videoEl = this.videoPlayers.get(index)!.nativeElement;
     if (videoEl.paused) {
-      videoEl.play().then(() => this.playingStates[index] = true);
+      videoEl.play().then(() => (this.playingStates[index] = true));
     } else {
       videoEl.pause();
       this.playingStates[index] = false;
@@ -131,7 +148,12 @@ export class StartscreenComponent implements AfterViewInit {
     const currentLength = this.streams.length;
     if (this.streamCount > currentLength) {
       for (let i = currentLength; i < this.streamCount; i++) {
-        this.streams.push({ name: '', url: this.baseUrl, hls: null, newName: '' });
+        this.streams.push({
+          name: '',
+          url: this.baseUrl,
+          hls: null,
+          newName: '',
+        });
         this.playingStates.push(false);
       }
     } else if (this.streamCount < currentLength) {
@@ -141,5 +163,13 @@ export class StartscreenComponent implements AfterViewInit {
       this.streams.splice(this.streamCount);
       this.playingStates.splice(this.streamCount);
     }
+  }
+  
+  getRowIndices(): number[] {
+    const indices = [];
+    for (let i = 0; i < this.streamCount; i += 2) {
+      indices.push(i);
+    }
+    return indices;
   }
 }

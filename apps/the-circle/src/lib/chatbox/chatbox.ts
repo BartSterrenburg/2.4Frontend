@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -16,6 +16,8 @@ export class ChatboxComponent implements OnInit, OnDestroy {
   chatForm: FormGroup;
   chats: VerifiedChat[] = [];
   private intervalId: any;
+  @Input() streamKey = '-';
+
 
   constructor(
     private fb: FormBuilder,
@@ -38,13 +40,15 @@ export class ChatboxComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadChats(): void {
-    this.http
-      .get<VerifiedChat[]>('http://localhost:3000/api/chat/-')
-      .subscribe((data) => {
-        this.chats = data;
-      });
-  }
+
+loadChats(): void {
+  this.http
+    .get<VerifiedChat[]>(`http://localhost:3000/api/chat/${this.streamKey}`)
+    .subscribe((data) => {
+      this.chats = data;
+    });
+}
+
 
   startAutoRefresh(): void {
     this.intervalId = setInterval(() => {
