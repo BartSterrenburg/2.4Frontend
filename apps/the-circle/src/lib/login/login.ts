@@ -42,8 +42,8 @@ async login() {
     }
 
     document.cookie = `privateKey=${encodeURIComponent(result.data.privateKey)}; path=/; max-age=86400; SameSite=Lax`;
+    document.cookie = `userId=${encodeURIComponent(result.data.userId)}; path=/; max-age=86400; SameSite=Lax`;
     document.cookie = `user=${encodeURIComponent(this.username)}; path=/; max-age=86400; SameSite=Lax`;
-
 
     setTimeout(() => {
       const cookies = document.cookie.split(';');

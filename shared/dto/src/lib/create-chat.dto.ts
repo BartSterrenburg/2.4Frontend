@@ -3,4 +3,5 @@ export class CreateChatDto {
   chat!: string;
   timeStamp!: Date;
   signature!: string;
+  streamKey!: string;
 }

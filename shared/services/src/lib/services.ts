@@ -1,23 +1,26 @@
-
-
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Services {
-async createSignature(data: string, privateKeyPem: string): Promise<string> {
+ async createSignature(data: string, privateKeyPem: string): Promise<string> {
+  console.log('[📝] Te signeren data:', data);
+
   const enc = new TextEncoder();
   const dataBuffer = enc.encode(data);
+  console.log('[🔣] DataBuffer (UTF-8 bytes):', Array.from(dataBuffer));
 
-  // 1. Parse the PEM-format key
+  console.log('[🔐] Begin parsing van privateKey PEM...');
   const pemContents = privateKeyPem
     .replace(/-----BEGIN PRIVATE KEY-----/, '')
     .replace(/-----END PRIVATE KEY-----/, '')
     .replace(/\s+/g, '');
-  const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
 
-  // 2. Import de key
+  const binaryDer = Uint8Array.from(atob(pemContents), (c) => c.charCodeAt(0));
+  console.log('[📦] DER-gecodeerde private key (length):', binaryDer.byteLength);
+
+  console.log('[➡️] Start import van private key naar CryptoKey object...');
   const key = await crypto.subtle.importKey(
     'pkcs8',
     binaryDer.buffer,
@@ -28,18 +31,30 @@ async createSignature(data: string, privateKeyPem: string): Promise<string> {
     false,
     ['sign']
   );
+  console.log('[✅] Private key succesvol geïmporteerd als CryptoKey');
 
-  // 3. Signeren
-  const signature = await crypto.subtle.sign(
+  console.log('[✍️] Start signing via SubtleCrypto...');
+  const signatureBuffer = await crypto.subtle.sign(
     'RSASSA-PKCS1-v1_5',
     key,
     dataBuffer
   );
 
-  // 4. Return base64 string
-  return btoa(String.fromCharCode(...new Uint8Array(signature)));
+  const base64Signature = this.bufferToBase64(signatureBuffer);
+  console.log('[📧] Base64-encoded signature:', base64Signature);
+
+  return base64Signature;
 }
 
+
+  bufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
 
   getCookie(name: string): string | null {
     const cookies = document.cookie.split(';');

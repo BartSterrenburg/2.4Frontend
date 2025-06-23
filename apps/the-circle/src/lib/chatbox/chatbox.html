@@ -1,8 +1,15 @@
 <div class="chatbox-container">
   <div class="chat-list">
-    <div class="chat-message" *ngFor="let chat of chats">
+    <div
+      class="chat-message"
+      *ngFor="let chat of chats"
+      [ngClass]="{ 'invalid-chat': !chat.valid, 'valid-chat': chat.valid }"
+    >
       <strong>User {{ chat.userId }}:</strong> {{ chat.chat }}
-      <div class="timestamp">{{ chat.createdAt | date:'short' }}</div>
+      <div class="timestamp">
+        {{ chat.createdAt | date: 'short' }}
+        <span *ngIf="!chat.valid" class="warning">⚠️ Ongeldig bericht (verificatie mislukt)</span>
+      </div>
     </div>
   </div>
 

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Services } from '@services';
+import { VerifiedChat } from '@entity';
 
 @Component({
   standalone: true,
@@ -11,11 +12,18 @@ import { Services } from '@services';
   styleUrls: ['./chatbox.css'],
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
 })
-export class ChatboxComponent implements OnInit {
+export class ChatboxComponent implements OnInit, OnDestroy {
   chatForm: FormGroup;
-  chats: { chat: string; userId: number; createdAt?: string }[] = [];
+  chats: VerifiedChat[] = [];
+  private intervalId: any;
+  @Input() streamKey = '-';
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private services: Services) {
+
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private services: Services
+  ) {
     this.chatForm = this.fb.group({
       chat: [''],
     });
@@ -23,39 +31,75 @@ export class ChatboxComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChats();
+    this.startAutoRefresh();
   }
 
-  loadChats(): void {
-    this.http.get<any[]>('http://localhost:3000/api/chat').subscribe((data) => {
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+
+loadChats(): void {
+  this.http
+    .get<VerifiedChat[]>(`http://localhost:3000/api/chat/${this.streamKey}`)
+    .subscribe((data) => {
       this.chats = data;
     });
-  }
-
-async sendChat(): Promise<void> {
-  const message = this.chatForm.value.chat.trim();
-  if (!message) return;
-
-  const privateKey = this.services.getCookie('privateKey');
-  if (!privateKey) {
-    console.error('Private key ontbreekt!');
-    return;
-  }
-
-  const timestamp = new Date().toISOString(); 
-  const signedHash = await this.services.createSignature(`${message};${timestamp}`, privateKey);
-
-  const chatObj = {
-    chat: message,
-    userId: 1004,
-    timeStamp: timestamp,
-    signature: signedHash
-  };
-
-  this.http.post('http://localhost:3000/api/chat', chatObj).subscribe(() => {
-    this.chats.push({ ...chatObj, createdAt: new Date().toISOString() });
-    this.chatForm.reset();
-  });
 }
 
 
+  startAutoRefresh(): void {
+    this.intervalId = setInterval(() => {
+      this.loadChats();
+    }, 3000);
+  }
+
+  async sendChat(): Promise<void> {
+    const message = this.chatForm.value.chat.trim();
+    console.log('[🟡] Chat input:', message);
+
+    if (!message) {
+      console.warn('[⚠️] Chat is leeg, versturen wordt afgebroken.');
+      return;
+    }
+
+    const privateKey = this.services.getCookie('privateKey');
+    console.log('[🔐] Ophalen van privateKey uit cookie...');
+
+    if (!privateKey) {
+      console.error('[❌] Private key ontbreekt! Chat wordt niet verstuurd.');
+      return;
+    }
+
+    const userId = this.services.getCookie('userId');
+    if (!userId) return;
+
+    const now = new Date();
+    now.setMilliseconds(0);
+    const timestamp = now.toISOString();
+
+    const dataToSign = `${message};${timestamp}`;
+    const signedHash = await this.services.createSignature(dataToSign, privateKey);
+
+    const chatObj = {
+      chat: message,
+      userId: Number(userId),
+      timeStamp: timestamp,
+      signature: signedHash,
+      streamKey: this.streamKey
+    };
+
+    this.http.post('http://localhost:3000/api/chat', chatObj).subscribe({
+      next: (response) => {
+        console.log('[✅] Chat succesvol verstuurd. Response:', response);
+        this.loadChats();
+        this.chatForm.reset();
+      },
+      error: (err) => {
+        console.error('[🔥] Fout bij versturen van chat:', err);
+      },
+    });
+  }
 }
