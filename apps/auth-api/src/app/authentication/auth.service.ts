@@ -29,35 +29,41 @@ export class AuthService {
     };
   }
 
-  async login(username: string, password: string) {
-    const user = await this.userRepository.findOne({ where: { username } });
+async login(username: string, password: string) {
+  const user = await this.userRepository.findOne({ where: { username } });
 
-    if (!(await user.validatePassword(password))) {
-      throw new Error('Ongeldige gebruikersnaam of wachtwoord');
-    }
-
-    const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-      modulusLength: 2048,
-      publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem',
-      },
-      privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem',
-      },
-    });
-
-    user.publicKey = publicKey;
-    user.lastLogin = new Date();
-    await this.userRepository.save(user);
-
-    return {
-      message: 'Login succesvol',
-      userId: user.id,
-      privateKey,
-    };
+  if (!user) {
+    throw new Error('Ongeldige gebruikersnaam of wachtwoord');
   }
+
+  const isValid = await user.validatePassword(password);
+  if (!isValid) {
+    throw new Error('Ongeldige gebruikersnaam of wachtwoord');
+  }
+
+  const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem',
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem',
+    },
+  });
+
+  user.publicKey = publicKey;
+  user.lastLogin = new Date();
+  await this.userRepository.save(user);
+
+  return {
+    message: 'Login succesvol',
+    userId: user.id,
+    privateKey,
+  };
+}
+
 
   async verifyData(dto: VerifyDataDto) {
     console.log('[📥] DTO ontvangen voor verificatie:', dto);

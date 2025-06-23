@@ -17,6 +17,13 @@ export class StartscreenComponent implements AfterViewInit {
     ElementRef<HTMLVideoElement>
   >;
 
+  selectedStreamIndex: number | null = null;
+
+selectStream(index: number) {
+  this.selectedStreamIndex = index;
+}
+
+
   baseUrl = 'http://145.49.9.137:8080/hls/';
   streamCount = 4;
 
@@ -199,6 +206,9 @@ startFetchingAvailableStreams() {
 }
 
 
+getStreamArray(): number[] {
+  return Array.from({ length: this.streamCount }, (_, i) => i);
+}
 
 
   private fetchAvailableStreams() {
