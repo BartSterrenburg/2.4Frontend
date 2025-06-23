@@ -202,7 +202,7 @@ startFetchingAvailableStreams() {
 
 
   private fetchAvailableStreams() {
-  this.http.get('http://145.49.58.7:8080/stat', { responseType: 'text' })
+  this.http.get('http://145.49.9.137:8080/stat', { responseType: 'text' })
     .subscribe({
       next: (data: string) => {
         const parser = new DOMParser();
