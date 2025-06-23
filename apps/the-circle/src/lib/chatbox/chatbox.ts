@@ -88,6 +88,7 @@ loadChats(): void {
       userId: Number(userId),
       timeStamp: timestamp,
       signature: signedHash,
+      streamKey: this.streamKey
     };
 
     this.http.post('http://localhost:3000/api/chat', chatObj).subscribe({

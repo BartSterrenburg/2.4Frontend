@@ -20,6 +20,7 @@ async createChat(createChatDto: CreateChatDto): Promise<Chat> {
   verifyInput.data = `${createChatDto.chat};${createChatDto.timeStamp}`;
   verifyInput.signature = createChatDto.signature;
   verifyInput.userId = createChatDto.userId;
+  verifyInput.streamkey = createChatDto.streamKey;
 
   console.log('[🔎] Opgebouwd VerifyDataDto:', verifyInput);
 

@@ -22,7 +22,7 @@ export class StartscreenComponent implements AfterViewInit {
     ElementRef<HTMLVideoElement>
   >;
 
-  baseUrl = 'http://145.49.9.137/hls/';
+  baseUrl = 'http://145.49.9.137:8080/hls/';
   streamCount = 4;
 
   streams = [
