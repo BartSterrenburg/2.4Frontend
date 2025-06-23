@@ -1,13 +1,19 @@
 <div class="main-container">
+  <div class="chat-header global-stream-settings">
+    <label for="streamCount">Aantal streams: </label>
+    <select id="streamCount" [(ngModel)]="streamCount" (change)="updateStreamCount()">
+      <option *ngFor="let n of [1, 2, 3, 4]" [value]="n">{{ n }}</option>
+    </select>
+  </div>
+
   <div class="content-area">
-    
     <!-- ✨ Nieuwe dynamische grid -->
     <div class="chat-stream-grid" [ngClass]="'streams-' + streamCount">
-  <ng-container *ngFor="let i of getStreamArray()">
-    <div class="video-wrapper"
-      [ngClass]="{ 'playing': playingStates[i], 'selected': selectedStreamIndex === i }"
-      (click)="selectStream(i)">
-      <video #videoPlayer muted playsinline></video>
+      <ng-container *ngFor="let i of getStreamArray()">
+        <div class="video-wrapper"
+          [ngClass]="{ 'playing': playingStates[i], 'selected': selectedStreamIndex === i }"
+          (click)="selectStream(i)">
+          <video #videoPlayer muted playsinline></video>
           <button class="fullscreen-btn" (click)="goFullscreen(i); $event.stopPropagation()">⛶</button>
 
           <div class="overlay">
@@ -37,13 +43,5 @@
     <div class="big-chat" *ngIf="selectedStreamIndex !== null">
       <app-chatbox [streamKey]="streams[selectedStreamIndex].name || '-'"></app-chatbox>
     </div>
-  </div>
-
-  <!-- Stream teller onderaan -->
-  <div class="chat-header global-stream-settings">
-    <label for="streamCount">Aantal streams: </label>
-    <select id="streamCount" [(ngModel)]="streamCount" (change)="updateStreamCount()">
-      <option *ngFor="let n of [1, 2, 3, 4]" [value]="n">{{ n }}</option>
-    </select>
   </div>
 </div>

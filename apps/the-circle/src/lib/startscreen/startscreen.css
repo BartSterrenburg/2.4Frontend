@@ -2,8 +2,6 @@
   box-sizing: border-box;
 }
 
-
-
 html, body {
   height: 100%;
   margin: 0;
@@ -11,27 +9,24 @@ html, body {
   background: #121212; /* Zelfde kleur als je main-container */
 }
 
-
-
 .main-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden; /* Houdt de outer container vast */
+  overflow: hidden;
   font-family: 'Orbitron', sans-serif;
   background: #121212;
   color: #eee;
   padding: 1rem;
   gap: 1rem;
   width: 100%;
-  background: #121212;
 }
 
 .content-area {
   display: flex;
   gap: 1rem;
-  flex: 1; /* Vul beschikbare hoogte */
-  min-height: 0; /* Zorg dat flexbox geen extra height veroorzaakt */
+  flex: 1;
+  min-height: 0;
 }
 
 .chat-stream-grid {
@@ -82,7 +77,6 @@ html, body {
   aspect-ratio: 16 / 9;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
-
 
 .video-wrapper.selected {
   border-color: #2196f3;
@@ -200,6 +194,7 @@ app-chatbox {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   font-size: 14px;
+  margin-left: auto;
 }
 
 select {
