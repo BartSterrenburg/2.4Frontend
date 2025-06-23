@@ -13,35 +13,39 @@ export class ChatService {
     private authService: AuthService
   ) {}
 
-  async createChat(createChatDto: CreateChatDto): Promise<Chat> {
-    console.log('[📥] Chat DTO ontvangen:', createChatDto);
+async createChat(createChatDto: CreateChatDto): Promise<Chat> {
+  console.log('[📥] Chat DTO ontvangen:', createChatDto);
 
-    const verifyInput = new VerifyDataDto();
-    verifyInput.data = `${createChatDto.chat};${createChatDto.timeStamp}`;
-    verifyInput.signature = createChatDto.signature;
-    verifyInput.userId = createChatDto.userId;
+  const verifyInput = new VerifyDataDto();
+  verifyInput.data = `${createChatDto.chat};${createChatDto.timeStamp}`;
+  verifyInput.signature = createChatDto.signature;
+  verifyInput.userId = createChatDto.userId;
 
-    console.log('[🔎] Opgebouwd VerifyDataDto:', verifyInput);
+  console.log('[🔎] Opgebouwd VerifyDataDto:', verifyInput);
 
-    const result = await this.authService.verifyData(verifyInput);
+  const result = await this.authService.verifyData(verifyInput);
 
-    console.log('[🧪] Resultaat van verifyData:', result);
-    console.log('[📝] VERIFYING DATA:', verifyInput.data);
+  console.log('[🧪] Resultaat van verifyData:', result);
 
-    if (!result.valid) {
-      console.warn(
-        '[❌] Signature verification mislukt voor userId:',
-        verifyInput.userId
-      );
-    } else {
-      const chat = this.chatRepository.create(createChatDto);
-      console.log('[💾] Chat entity gecreëerd (nog niet opgeslagen):', chat);
-      console.log('[✅] Signature geldig. Bericht wordt opgeslagen.');
-      const savedChat = await this.chatRepository.save(chat);
-      console.log('[📚] Chat succesvol opgeslagen in database:', savedChat);
-      return savedChat;
-    }
+  if (!result.valid) {
+    console.warn('[❌] Signature verification mislukt voor userId:', verifyInput.userId);
+    return;
   }
+
+  // 🧠 Haal public key van de user op
+  const userPublicKey = await this.authService.getPublicKeyById(createChatDto.userId);
+
+  const chat = this.chatRepository.create({
+    ...createChatDto,
+    userPublicKey, // ✅ sleutel toevoegen aan chat record
+  });
+
+  console.log('[✅] Signature geldig. Bericht wordt opgeslagen.');
+  const savedChat = await this.chatRepository.save(chat);
+  console.log('[📚] Chat succesvol opgeslagen in database:', savedChat);
+  return savedChat;
+}
+
 
 async getChats(
   streamKey: string
@@ -50,7 +54,6 @@ async getChats(
 
   const rawChats = await this.chatRepository
     .createQueryBuilder('chat')
-    .leftJoin('user', 'user', 'user.id = chat.userId')
     .where('LOWER(chat.streamKey) = LOWER(:streamKey)', { streamKey })
     .select([
       'chat.id',
@@ -60,7 +63,7 @@ async getChats(
       'chat.signature',
       'chat.timeStamp',
       'chat.createdAt',
-      'user.publicKey',
+      'chat.userPublicKey',
     ])
     .getRawMany();
 
@@ -71,21 +74,17 @@ async getChats(
 
   for (const [index, row] of rawChats.entries()) {
     console.log(`[getChats] Verwerken van chat #${index + 1} met ID: ${row.chat_id}`);
-    console.debug(`[getChats] Chat inhoud: ${row.chat_chat}`);
-    console.debug(`[getChats] Tekenreeks voor verificatie: "${row.chat_chat};${new Date(row.chat_timeStamp).toISOString()}"`);
-    console.debug(`[getChats] Handtekening: ${row.chat_signature}`);
-    console.debug(`[getChats] User ID: ${row.chat_userId}, publicKey: ${row.user_publicKey}`);
 
     const dataToVerify = `${row.chat_chat};${new Date(row.chat_timeStamp).toISOString()}`;
-    console.log("Belangrijke data: " + dataToVerify);
+    const publicKey = row.chat_userPublicKey;
 
-    const verification = await this.authService.verifyData({
-      data: dataToVerify,
-      signature: row.chat_signature,
-      userId: row.chat_userId,
-    });
-
-    console.log(`[getChats] Verificatieresultaat voor chat ID ${row.chat_id}: ${verification.valid}`);
+    const verification = publicKey
+      ? await this.authService.verifyDataWithPubKey({
+          data: dataToVerify,
+          signature: row.chat_signature,
+          userId: row.chat_userId,
+        }, publicKey)
+      : { valid: false };
 
     verifiedChats.push({
       id: row.chat_id,
@@ -95,7 +94,7 @@ async getChats(
       signature: row.chat_signature,
       timeStamp: row.chat_timeStamp,
       createdAt: row.chat_createdAt,
-      userPublicKey: row.user_publicKey,
+      userPublicKey: publicKey,
       valid: verification.valid,
     });
   }
@@ -103,6 +102,7 @@ async getChats(
   console.log(`[getChats] Totaal aantal geverifieerde chats: ${verifiedChats.length}`);
   return verifiedChats;
 }
+
 
 
 

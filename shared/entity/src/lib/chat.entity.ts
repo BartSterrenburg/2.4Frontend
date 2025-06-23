@@ -21,6 +21,9 @@ export class Chat {
   @Column('text', { nullable: true })
   signature!: string;
 
+  @Column('text', { nullable: true })
+  userPublicKey!: string;
+
   @Column('datetime')
   timeStamp!: Date;
 
@@ -39,4 +42,5 @@ export interface VerifiedChat {
   userPublicKey: string | null;
   valid: boolean;
 }
+
 
