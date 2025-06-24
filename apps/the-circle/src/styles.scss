@@ -1,1 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #121212;  /* Dit zorgt dat de hele pagina donker is */
+  color: #eee;          /* Je standaard tekstkleur */
+}

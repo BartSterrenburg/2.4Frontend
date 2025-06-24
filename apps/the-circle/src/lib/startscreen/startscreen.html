@@ -1,58 +1,47 @@
 <div class="main-container">
-  <div class="chat-stream-grid">
-    <div class="video-chat-pair-row" *ngFor="let i of getRowIndices()">
-      <div class="video-chat-pair" *ngFor="let j of [0, 1]">
-        <ng-container *ngIf="streams[i + j]">
-          <div class="video-wrapper" [ngClass]="{ 'playing': playingStates[i + j] }">
-            <video #videoPlayer muted playsinline></video>
-            <button class="fullscreen-btn" (click)="goFullscreen(i + j)">⛶</button>
-
-            <div class="overlay">
-              <ng-container *ngIf="!isDefaultStream(streams[i + j]); else searchBar">
-                <div class="top-bar">
-                  <input
-                    [(ngModel)]="streams[i + j].newName"
-                    (keyup.enter)="loadNewStream(i + j)"
-                    placeholder="Streamer naam"
-                  />
-                  <button class="close-btn" (click)="closeStream(i + j)">❌</button>
-                </div>
-                <div class="center-button" (click)="togglePlay(i + j)">▶</div>
-              </ng-container>
-
-              <ng-template #searchBar>
-                <div class="search-bar">
-              <select
-                [(ngModel)]="streams[i + j].newName"
-                (change)="loadNewStream(i + j)"
-              >  
-                    <option value="" disabled selected>Kies stream...</option>
-                    <option *ngFor="let s of availableStreams" [value]="s">{{ s }}</option>
-                  </select>
-                  <input
-                    [(ngModel)]="streams[i + j].newName"
-                    (keyup.enter)="loadNewStream(i + j)"
-                    placeholder="Zoek streamer..."
-                  />
-                </div>
-              </ng-template>
-            </div>
-          </div>
-
-          <app-chatbox [streamKey]="streams[i + j].name || '-'"></app-chatbox>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-
   <div class="chat-header global-stream-settings">
     <label for="streamCount">Aantal streams: </label>
-    <select
-      id="streamCount"
-      [(ngModel)]="streamCount"
-      (change)="updateStreamCount()"
-    >
+    <select id="streamCount" [(ngModel)]="streamCount" (change)="updateStreamCount()">
       <option *ngFor="let n of [1, 2, 3, 4]" [value]="n">{{ n }}</option>
     </select>
+  </div>
+
+  <div class="content-area">
+    <!-- ✨ Nieuwe dynamische grid -->
+    <div class="chat-stream-grid" [ngClass]="'streams-' + streamCount">
+      <ng-container *ngFor="let i of getStreamArray()">
+        <div class="video-wrapper"
+          [ngClass]="{ 'playing': playingStates[i], 'selected': selectedStreamIndex === i }"
+          (click)="selectStream(i)">
+          <video #videoPlayer muted playsinline></video>
+          <button class="fullscreen-btn" (click)="goFullscreen(i); $event.stopPropagation()">⛶</button>
+
+          <div class="overlay">
+            <ng-container *ngIf="!isDefaultStream(streams[i]); else searchBar">
+              <div class="top-bar">
+                <input [(ngModel)]="streams[i].newName" (keyup.enter)="loadNewStream(i)" placeholder="Streamer naam" />
+                <button class="close-btn" (click)="closeStream(i); $event.stopPropagation()">❌</button>
+              </div>
+              <div class="center-button" (click)="togglePlay(i); $event.stopPropagation()">▶</div>
+            </ng-container>
+
+            <ng-template #searchBar>
+              <div class="search-bar">
+                <select [(ngModel)]="streams[i].newName" (change)="loadNewStream(i)">
+                  <option value="" disabled selected>Kies stream...</option>
+                  <option *ngFor="let s of availableStreams" [value]="s">{{ s }}</option>
+                </select>
+                <input [(ngModel)]="streams[i].newName" (keyup.enter)="loadNewStream(i)" placeholder="Zoek streamer..." />
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Chat rechts -->
+    <div class="big-chat" *ngIf="selectedStreamIndex !== null">
+      <app-chatbox [streamKey]="streams[selectedStreamIndex].name || '-'"></app-chatbox>
+    </div>
   </div>
 </div>
