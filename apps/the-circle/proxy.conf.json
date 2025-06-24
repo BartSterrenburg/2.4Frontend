@@ -1,6 +1,6 @@
 {
   "/hls": {
-    "target": "http://145.49.45.65:8080",
+    "target": "http://145.49.24.197:8080",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

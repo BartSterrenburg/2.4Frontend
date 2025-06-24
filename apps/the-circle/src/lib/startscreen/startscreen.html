@@ -25,7 +25,7 @@
               <select
                 [(ngModel)]="streams[i + j].newName"
                 (change)="loadNewStream(i + j)"
-              >
+              >  
                     <option value="" disabled selected>Kies stream...</option>
                     <option *ngFor="let s of availableStreams" [value]="s">{{ s }}</option>
                   </select>
